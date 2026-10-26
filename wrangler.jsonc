@@ -1,0 +1,32 @@
+{
+  // Ask Randhir — one Cloudflare Worker: the chat API + the standalone page.
+  // Deploy:  npx wrangler deploy
+  // Secrets (never put real keys in this file):
+  //   npx wrangler secret put GEMINI_API_KEY
+  //   npx wrangler secret put GROQ_API_KEY
+  "name": "ask-randhir",
+  "main": "worker/src/index.js",
+  "compatibility_date": "2026-10-01",
+  // Lets the Worker import worker/knowledge.md as text.
+  "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "vars": {
+    // Swap the LLM with one variable: "gemini" (primary) or "groq" (fallback).
+    "LLM_PROVIDER": "gemini",
+    // Origins allowed to call /api/chat from a browser. The Worker's own
+    // origin (the standalone page) is always allowed in code.
+    "ALLOWED_ORIGINS": "https://randhirsingh77.github.io",
+    // Abuse controls.
+    "DAILY_CAP": "350",
+    "PER_IP_PER_MIN": "10",
+    "MAX_MESSAGE_CHARS": "800"
+  }
+  // Optional but recommended: a KV namespace makes the daily cap exact and
+  // global instead of per-isolate. Create it with:
+  //   npx wrangler kv namespace create CHAT_KV
+  // then uncomment and paste the returned id:
+  // "kv_namespaces": [{ "binding": "CHAT_KV", "id": "PASTE_KV_NAMESPACE_ID" }]
+}

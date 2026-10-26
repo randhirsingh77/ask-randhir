@@ -1,0 +1,1 @@
+{"description":"Ask Randhir — a guarded AI assistant for Randhir Singh's portfolio. Answers only about him, his skills and his projects.","name":"ask-randhir","private":true,"scripts":{"deploy":"npx wrangler deploy","dev":"npx wrangler dev","test":"node tests/run-tests.mjs","test:live":"node tests/run-tests.mjs --live"},"type":"module","version":"1.0.0"}
