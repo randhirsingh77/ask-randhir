@@ -1,0 +1,209 @@
+/* Ask Randhir — styles for the chat component (widget + page modes).
+   Matches the portfolio's design language: dark navy surfaces, one
+   soft-green accent, Inter, no gradients or glow. */
+
+:root {
+  --ar-bg: #0e141d;
+  --ar-bg-soft: #131c28;
+  --ar-border: #243144;
+  --ar-text: #d9e0ea;
+  --ar-muted: #8d9cae;
+  --ar-accent: #6fd3a7;
+  --ar-accent-ink: #0e141d;
+}
+
+.ar-launcher {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 6px 18px 6px 6px;
+  border: 1px solid var(--ar-border);
+  border-radius: 999px;
+  background: var(--ar-bg-soft);
+  color: var(--ar-text);
+  font: 500 15px/1.2 "Inter", system-ui, sans-serif;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+.ar-launcher:hover { border-color: var(--ar-accent); }
+.ar-launcher-hidden { visibility: hidden; }
+.ar-launcher-avatar { width: 36px; height: 36px; border-radius: 50%; }
+
+.ar-dialog {
+  position: fixed;
+  inset: auto 20px 20px auto;
+  width: min(560px, 92vw);
+  height: min(75dvh, 720px);
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--ar-border);
+  border-radius: 16px;
+  background: var(--ar-bg);
+  color: var(--ar-text);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.ar-dialog::backdrop { background: rgba(4, 8, 14, 0.55); }
+
+.ar-chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--ar-bg);
+  color: var(--ar-text);
+}
+
+.ar-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--ar-border);
+  background: var(--ar-bg-soft);
+}
+.ar-avatar { width: 40px; height: 40px; border-radius: 50%; flex: none; }
+.ar-titles { flex: 1; min-width: 0; }
+.ar-title { margin: 0; font-size: 16px; font-weight: 600; }
+.ar-sub { margin: 2px 0 0; font-size: 12.5px; color: var(--ar-muted); }
+.ar-close {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--ar-border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ar-text);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ar-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ar-msg { display: flex; gap: 8px; max-width: 92%; }
+.ar-msg-user { align-self: flex-end; }
+.ar-msg-assistant { align-self: flex-start; }
+.ar-msg-avatar { width: 28px; height: 28px; border-radius: 50%; flex: none; margin-top: 2px; }
+.ar-bubble {
+  padding: 10px 13px;
+  border-radius: 14px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.ar-msg-user .ar-bubble {
+  background: var(--ar-accent);
+  color: var(--ar-accent-ink);
+  border-bottom-right-radius: 4px;
+}
+.ar-msg-assistant .ar-bubble {
+  background: var(--ar-bg-soft);
+  border: 1px solid var(--ar-border);
+  border-bottom-left-radius: 4px;
+}
+.ar-typing { align-self: flex-start; color: var(--ar-muted); font-size: 13px; }
+
+.ar-starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 16px 10px;
+}
+.ar-starter {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--ar-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ar-text);
+  font: 400 13px/1.2 "Inter", system-ui, sans-serif;
+  cursor: pointer;
+}
+.ar-starter:hover { border-color: var(--ar-accent); color: var(--ar-accent); }
+
+.ar-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ar-border);
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+.ar-input {
+  flex: 1;
+  min-height: 44px;
+  max-height: 120px;
+  padding: 11px 13px;
+  border: 1px solid var(--ar-border);
+  border-radius: 12px;
+  background: var(--ar-bg-soft);
+  color: var(--ar-text);
+  /* 16px stops iOS auto-zoom on focus */
+  font: 400 16px/1.4 "Inter", system-ui, sans-serif;
+  resize: none;
+}
+.ar-send {
+  flex: none;
+  min-width: 64px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 12px;
+  background: var(--ar-accent);
+  color: var(--ar-accent-ink);
+  font: 600 15px/1 "Inter", system-ui, sans-serif;
+  cursor: pointer;
+}
+.ar-send:disabled { opacity: 0.55; cursor: wait; }
+
+.ar-note {
+  margin: 0;
+  padding: 0 16px 12px;
+  font-size: 12px;
+  color: var(--ar-muted);
+}
+
+.ar-launcher:focus-visible,
+.ar-close:focus-visible,
+.ar-starter:focus-visible,
+.ar-send:focus-visible,
+.ar-input:focus-visible {
+  outline: 2px solid var(--ar-accent);
+  outline-offset: 2px;
+}
+
+/* Phones: the panel becomes a full-viewport sheet over the page — the
+   standard exception to the ~75% rule, because a smaller panel leaves no
+   room once the on-screen keyboard opens. */
+@media (max-width: 639px) {
+  .ar-dialog {
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    border: none;
+    border-radius: 0;
+  }
+  .ar-launcher { right: 14px; bottom: 14px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ar-dialog[open] { animation: ar-in 160ms ease-out; }
+  @keyframes ar-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+}

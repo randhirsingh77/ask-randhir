@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ask Randhir — AI portfolio assistant</title>
+<meta name="description" content="Ask Randhir is an AI assistant that answers questions about Randhir Singh, a full-stack developer in New Delhi — his skills, projects and experience." />
+<meta name="theme-color" content="#0e141d" />
+<link rel="icon" href="avatar.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="chat.css" />
+<style>
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: #0e141d;
+    color: #d9e0ea;
+    font-family: "Inter", system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+  }
+  .page-head {
+    width: min(860px, 100%);
+    margin: 0 auto;
+    padding: 28px 20px 12px;
+    box-sizing: border-box;
+  }
+  .page-head h1 { margin: 0 0 6px; font-size: 28px; font-weight: 700; }
+  .page-head p { margin: 0; color: #8d9cae; font-size: 15px; line-height: 1.5; }
+  .page-head a { color: #6fd3a7; }
+  main {
+    flex: 1;
+    min-height: 0;
+    width: min(860px, 100%);
+    margin: 0 auto;
+    padding: 8px 20px 24px;
+    box-sizing: border-box;
+    display: flex;
+  }
+  #ask-randhir-root {
+    flex: 1;
+    min-height: 0;
+    border: 1px solid #243144;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <h1>Ask Randhir</h1>
+  <p>
+    An AI assistant that answers questions about
+    <a href="https://randhirsingh77.github.io/portfolio/">Randhir Singh</a> —
+    full-stack developer in New Delhi. Ask about his skills, his projects or
+    how to contact him; it politely refuses everything else.
+  </p>
+</header>
+
+<main>
+  <div id="ask-randhir-root"></div>
+</main>
+
+<script src="chat.js" data-mode="page" data-api="/api/chat"></script>
+</body>
+</html>

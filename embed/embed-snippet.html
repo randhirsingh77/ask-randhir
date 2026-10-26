@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<!--
+  Ask Randhir — portfolio embed snippet.
+
+  Paste the three lines below just before </body> on the portfolio page
+  (this exact snippet is already pasted into the portfolio's index.html).
+
+  1) If the deployed Worker URL is different, change ONLY the first line.
+  2) The widget JS/CSS are loaded from this repo via jsDelivr, so the
+     portfolio always runs the same component as the standalone page.
+  3) The API key is NOT here and must never be: the browser only talks to
+     the Worker's /api/chat endpoint; the key lives in Worker secrets.
+-->
+<script>window.ASK_RANDHIR_API = "https://ask-randhir.YOUR-CLOUDFLARE-SUBDOMAIN.workers.dev/api/chat";</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/randhirsingh77/ask-randhir@main/public/chat.css" />
+<script src="https://cdn.jsdelivr.net/gh/randhirsingh77/ask-randhir@main/public/chat.js" data-mode="widget" defer></script>

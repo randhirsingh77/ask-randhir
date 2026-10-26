@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Randhir Singh">
+  <!-- Placeholder avatar: Randhir's initials.
+       To use his photo instead, save the photo as avatar.jpg in this same
+       folder and change the AVATAR_FILE line at the top of chat.js. -->
+  <rect width="96" height="96" rx="48" fill="#131c28"/>
+  <circle cx="48" cy="48" r="46.5" fill="none" stroke="#6fd3a7" stroke-width="3"/>
+  <text x="48" y="60" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="600" fill="#6fd3a7">RS</text>
+</svg>

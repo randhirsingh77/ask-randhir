@@ -1,0 +1,230 @@
+/* Ask Randhir — one dependency-free chat component, two modes.
+ *
+ *   widget mode: a launcher button on the portfolio opens the chat as a
+ *                popup panel (native <dialog>, ~75dvh). It is NOT a page.
+ *   page mode:   the same component rendered full-screen as the
+ *                standalone page served by the Worker at / and /chat.
+ *
+ * Config (first match wins):
+ *   API URL:  window.ASK_RANDHIR_API  >  data-api on this script tag  >  "/api/chat"
+ *   Mode:     data-mode on this script tag ("widget" | "page")  >  "widget"
+ *
+ * Answers are rendered with textContent only — never as HTML — so model
+ * output can never inject markup into the host page.
+ */
+(function () {
+  "use strict";
+
+  // AVATAR: to use Randhir's photo, save it as avatar.jpg next to this
+  // file and change this one line to "avatar.jpg".
+  var AVATAR_FILE = "avatar.svg";
+
+  var scriptEl = document.currentScript;
+  var base = scriptEl ? scriptEl.src.replace(/[^/]*$/, "") : "";
+  var API_URL =
+    window.ASK_RANDHIR_API ||
+    (scriptEl && scriptEl.getAttribute("data-api")) ||
+    "/api/chat";
+  var MODE = (scriptEl && scriptEl.getAttribute("data-mode")) || "widget";
+  var AVATAR_URL = base + AVATAR_FILE;
+  var CONTACT_EMAIL = "rs6201849307@gmail.com";
+
+  var STARTERS = [
+    "What are his main skills?",
+    "Tell me about the Foodie project",
+    "How can I contact him?",
+  ];
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  function buildChat(onClose) {
+    var root = el("div", "ar-chat");
+
+    var head = el("div", "ar-head");
+    var avatar = el("img", "ar-avatar");
+    avatar.src = AVATAR_URL;
+    avatar.alt = "";
+    var titles = el("div", "ar-titles");
+    titles.appendChild(el("p", "ar-title", "Ask Randhir"));
+    titles.appendChild(
+      el("p", "ar-sub", "AI assistant — his skills, projects & experience")
+    );
+    head.appendChild(avatar);
+    head.appendChild(titles);
+    if (onClose) {
+      var closeBtn = el("button", "ar-close", "×");
+      closeBtn.type = "button";
+      closeBtn.setAttribute("aria-label", "Close chat");
+      closeBtn.addEventListener("click", onClose);
+      head.appendChild(closeBtn);
+    }
+    root.appendChild(head);
+
+    var log = el("div", "ar-messages");
+    log.setAttribute("role", "log");
+    log.setAttribute("aria-live", "polite");
+    log.setAttribute("aria-label", "Conversation");
+    root.appendChild(log);
+
+    var starters = el("div", "ar-starters");
+    STARTERS.forEach(function (q) {
+      var b = el("button", "ar-starter", q);
+      b.type = "button";
+      b.addEventListener("click", function () {
+        send(q);
+      });
+      starters.appendChild(b);
+    });
+    root.appendChild(starters);
+
+    var form = el("form", "ar-form");
+    var input = el("textarea", "ar-input");
+    input.rows = 1;
+    input.placeholder = "Ask about Randhir…";
+    input.setAttribute("aria-label", "Your question");
+    input.maxLength = 800;
+    var sendBtn = el("button", "ar-send", "Send");
+    sendBtn.type = "submit";
+    form.appendChild(input);
+    form.appendChild(sendBtn);
+    root.appendChild(form);
+
+    root.appendChild(
+      el(
+        "p",
+        "ar-note",
+        "AI answers can be wrong — for anything important, email " +
+          CONTACT_EMAIL +
+          "."
+      )
+    );
+
+    var history = [];
+    var busy = false;
+
+    function addMessage(role, text) {
+      var row = el("div", "ar-msg ar-msg-" + role);
+      if (role === "assistant") {
+        var img = el("img", "ar-msg-avatar");
+        img.src = AVATAR_URL;
+        img.alt = "";
+        row.appendChild(img);
+      }
+      row.appendChild(el("div", "ar-bubble", text));
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
+      return row;
+    }
+
+    function send(text) {
+      var content = (text != null ? text : input.value).trim();
+      if (!content || busy) return;
+      busy = true;
+      sendBtn.disabled = true;
+      if (text == null) input.value = "";
+      history.push({ role: "user", content: content });
+      addMessage("user", content);
+      var typing = el("div", "ar-typing", "Typing…");
+      typing.setAttribute("role", "status");
+      log.appendChild(typing);
+      log.scrollTop = log.scrollHeight;
+
+      fetch(API_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ messages: history.slice(-6) }),
+      })
+        .then(function (res) {
+          return res.json().catch(function () {
+            return {};
+          });
+        })
+        .then(function (body) {
+          var answer =
+            body.answer ||
+            body.message ||
+            "Something went wrong — please try again, or email Randhir directly at " +
+              CONTACT_EMAIL +
+              ".";
+          history.push({ role: "assistant", content: answer });
+          addMessage("assistant", answer);
+        })
+        .catch(function () {
+          addMessage(
+            "assistant",
+            "I can't reach the assistant right now — please try again in a moment, or email Randhir directly at " +
+              CONTACT_EMAIL +
+              "."
+          );
+        })
+        .finally(function () {
+          typing.remove();
+          busy = false;
+          sendBtn.disabled = false;
+        });
+    }
+
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      send();
+    });
+    input.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" && !ev.shiftKey) {
+        ev.preventDefault();
+        send();
+      }
+    });
+
+    addMessage(
+      "assistant",
+      "Hi! Ask me anything about Randhir — his skills, his projects like Foodie and the LMS, or how to contact him."
+    );
+
+    return { root: root, input: input };
+  }
+
+  if (MODE === "page") {
+    var mount =
+      document.getElementById("ask-randhir-root") || document.body;
+    mount.appendChild(buildChat(null).root);
+    return;
+  }
+
+  // ---- widget mode ----
+  var launcher = el("button", "ar-launcher");
+  launcher.type = "button";
+  launcher.setAttribute("aria-label", "Chat with Randhir's assistant");
+  var lImg = el("img", "ar-launcher-avatar");
+  lImg.src = AVATAR_URL;
+  lImg.alt = "";
+  launcher.appendChild(lImg);
+  launcher.appendChild(el("span", "ar-launcher-label", "Ask Randhir"));
+  document.body.appendChild(launcher);
+
+  var dialog = el("dialog", "ar-dialog");
+  dialog.setAttribute("aria-label", "Ask Randhir — chat");
+  var chat = buildChat(function () {
+    dialog.close();
+  });
+  dialog.appendChild(chat.root);
+  document.body.appendChild(dialog);
+
+  launcher.addEventListener("click", function () {
+    if (!dialog.open) {
+      dialog.showModal();
+      launcher.classList.add("ar-launcher-hidden");
+      // Auto-focus is helpful with a real keyboard; on touch devices it
+      // would summon the on-screen keyboard uninvited.
+      if (window.matchMedia("(pointer: fine)").matches) chat.input.focus();
+    }
+  });
+  dialog.addEventListener("close", function () {
+    launcher.classList.remove("ar-launcher-hidden");
+    launcher.focus(); // return focus to the launcher
+  });
+})();
