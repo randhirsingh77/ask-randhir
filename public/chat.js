@@ -274,6 +274,35 @@
   dialog.appendChild(chat.root);
   document.body.appendChild(dialog);
 
+  // Peek greeting: shortly after the page loads, the avatar character
+  // pops OUT of the launcher circle — bigger — plays its (silent) wave,
+  // then settles back into the circle. Once per page load.
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var peek = el("video", "ar-peek");
+  peek.muted = true;
+  peek.loop = true;
+  peek.playsInline = true;
+  peek.preload = "auto";
+  peek.poster = AVATAR_URL;
+  peek.src = base + GREET_VIDEO_FILE;
+  peek.setAttribute("aria-hidden", "true");
+  document.body.appendChild(peek);
+  var peekInTimer = null;
+  var peekOutTimer = null;
+  function hidePeek() {
+    if (peekInTimer) clearTimeout(peekInTimer);
+    if (peekOutTimer) clearTimeout(peekOutTimer);
+    peek.classList.remove("ar-peek-show");
+  }
+  if (!reduceMotion) {
+    peekInTimer = setTimeout(function () {
+      peek.classList.add("ar-peek-show");
+      var p = peek.play();
+      if (p && p.catch) p.catch(function () {});
+      peekOutTimer = setTimeout(hidePeek, 5200);
+    }, 1200);
+  }
+
   // Greeting teaser: a little WhatsApp-style bubble that pops in beside
   // the launcher shortly after the page loads, so the avatar greets the
   // visitor before they even open the chat. Once per page load.
@@ -302,6 +331,7 @@
   function openChat() {
     if (!dialog.open) {
       hideTeaser();
+      hidePeek();
       dialog.showModal();
       launcher.classList.add("ar-launcher-hidden");
       chat.startGreeting();
