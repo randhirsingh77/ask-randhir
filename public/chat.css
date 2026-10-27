@@ -17,8 +17,8 @@
   right: 20px;
   bottom: 20px;
   z-index: 60;
-  width: 76px;
-  height: 76px;
+  width: 84px;
+  height: 84px;
   padding: 0;
   border: 2px solid var(--ar-border);
   border-radius: 50%;
@@ -153,7 +153,7 @@
 .ar-teaser {
   position: fixed;
   right: 20px;
-  bottom: 108px;
+  bottom: 116px;
   z-index: 60;
   display: flex;
   align-items: flex-start;
@@ -269,9 +269,9 @@
     border: none;
     border-radius: 0;
   }
-  .ar-launcher { right: 14px; bottom: 14px; width: 64px; height: 64px; }
-  .ar-teaser { right: 14px; bottom: 90px; }
-  .ar-peek { right: 14px; bottom: 14px; width: 132px; height: 132px; }
+  .ar-launcher { right: 14px; bottom: 14px; width: 72px; height: 72px; }
+  .ar-teaser { right: 14px; bottom: 98px; }
+  .ar-peek { right: 14px; bottom: 14px; width: 140px; height: 140px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
