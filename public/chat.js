@@ -18,7 +18,7 @@
   // AVATAR: avatar.jpg next to this file is the illustrated avatar;
   // avatar-greet.mp4 is its silent animated version, shown in the header.
   var AVATAR_FILE = "avatar.jpg";
-  var GREET_VIDEO_FILE = "avatar-greet.mp4";
+  var GREET_VIDEO_FILE = "avatar-greet-polite.mp4";
 
   var scriptEl = document.currentScript;
   var base = scriptEl ? scriptEl.src.replace(/[^/]*$/, "") : "";
@@ -264,15 +264,17 @@
   lImg.src = AVATAR_URL;
   lImg.alt = "";
   launcher.appendChild(lImg);
-  // The greeting character lives INSIDE the launcher: when it is time
-  // to greet, the button's own avatar comes out (see .ar-greeting) —
-  // there is never a second avatar.
-  var charImg = el("img", "ar-launcher-char");
-  charImg.src = base + "avatar-peek.webp";
-  charImg.alt = "";
-  charImg.setAttribute("aria-hidden", "true");
-  charImg.setAttribute("fetchpriority", "high");
-  launcher.appendChild(charImg);
+  // The greeting wave lives INSIDE the launcher: the avatar pic itself
+  // comes alive and waves politely (a short clip framed exactly like
+  // the still pic), then settles back to the still pic. One pic only.
+  var waveVid = el("video", "ar-launcher-wave");
+  waveVid.muted = true;
+  waveVid.playsInline = true;
+  waveVid.preload = "auto";
+  waveVid.poster = AVATAR_URL;
+  waveVid.src = base + "avatar-greet-polite.mp4";
+  waveVid.setAttribute("aria-hidden", "true");
+  launcher.appendChild(waveVid);
   document.body.appendChild(launcher);
 
   var dialog = el("dialog", "ar-dialog");
@@ -283,34 +285,39 @@
   dialog.appendChild(chat.root);
   document.body.appendChild(dialog);
 
-  // Greeting: the launcher's OWN avatar comes out to greet. The button
-  // opens up, its avatar rises out of the circle — smiling, waving —
-  // stays a few seconds, then settles back into the circle. One element
-  // throughout. The start waits until the character animation has
-  // actually loaded (on a slow mobile connection the moment must not
-  // pass before the file arrives); it gives up quietly if it fails.
+  // Greeting: the pic waves politely twice (about 6 seconds), while
+  // the teaser bubble is up; then the pic settles back to still. The
+  // start waits until the clip has actually loaded, so the moment is
+  // not missed on a slow mobile connection.
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var charReady = false;
-  var charFailed = false;
-  charImg.addEventListener("load", function () { charReady = true; });
-  charImg.addEventListener("error", function () { charFailed = true; });
+  var waveReady = false;
+  var wavePlays = 0;
   var greetInTimer = null;
-  var greetOutTimer = null;
+  waveVid.addEventListener("loadeddata", function () { waveReady = true; });
+  waveVid.addEventListener("ended", function () {
+    wavePlays += 1;
+    if (wavePlays < 2) {
+      waveVid.currentTime = 0;
+      var p2 = waveVid.play();
+      if (p2 && p2.catch) p2.catch(function () {});
+    } else {
+      endGreeting();
+    }
+  });
   function runGreeting() {
-    launcher.classList.add("ar-greeting");
-    greetOutTimer = setTimeout(endGreeting, 6000);
+    waveVid.classList.add("ar-launcher-wave-on");
+    var p = waveVid.play();
+    if (p && p.catch) p.catch(function () {});
   }
   function endGreeting() {
     if (greetInTimer) clearTimeout(greetInTimer);
-    if (greetOutTimer) clearTimeout(greetOutTimer);
-    launcher.classList.remove("ar-greeting");
+    waveVid.classList.remove("ar-launcher-wave-on");
+    try { waveVid.pause(); } catch (e) {}
   }
   if (!reduceMotion) {
     greetInTimer = setTimeout(function () {
-      if (charReady) runGreeting();
-      else if (!charFailed) {
-        greetInTimer = setTimeout(function () { if (!charFailed) runGreeting(); }, 1600);
-      }
+      if (waveReady) runGreeting();
+      else greetInTimer = setTimeout(runGreeting, 1600);
     }, 1100);
   }
 
@@ -326,13 +333,14 @@
   teaserClose.setAttribute("aria-label", "Dismiss greeting");
   teaser.appendChild(teaserClose);
   document.body.appendChild(teaser);
-  // The bubble arrives only AFTER the character has waved and settled
-  // back into the button, so the two never overlap.
+  // The bubble comes up while the pic is waving and leaves with it.
   var teaserTimer = setTimeout(function () {
     teaser.classList.add("ar-teaser-show");
-  }, 7500);
+  }, 1600);
+  var teaserOutTimer = setTimeout(hideTeaser, 7300);
   function hideTeaser() {
     clearTimeout(teaserTimer);
+    clearTimeout(teaserOutTimer);
     teaser.classList.remove("ar-teaser-show");
   }
   teaserClose.addEventListener("click", function (ev) {
