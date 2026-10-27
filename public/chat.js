@@ -293,7 +293,7 @@
   if (!reduceMotion) {
     peekInTimer = setTimeout(function () {
       peek.classList.add("ar-peek-show");
-      peekOutTimer = setTimeout(hidePeek, 3400);
+      peekOutTimer = setTimeout(hidePeek, 6000);
     }, 1000);
   }
 
@@ -313,7 +313,7 @@
   // back into the button, so the two never overlap.
   var teaserTimer = setTimeout(function () {
     teaser.classList.add("ar-teaser-show");
-  }, 4900);
+  }, 7500);
   function hideTeaser() {
     clearTimeout(teaserTimer);
     teaser.classList.remove("ar-teaser-show");
