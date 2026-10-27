@@ -264,7 +264,6 @@
   lImg.src = AVATAR_URL;
   lImg.alt = "";
   launcher.appendChild(lImg);
-  launcher.appendChild(el("span", "ar-launcher-label", "Ask Randhir"));
   document.body.appendChild(launcher);
 
   var dialog = el("dialog", "ar-dialog");
