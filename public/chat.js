@@ -293,8 +293,8 @@
   if (!reduceMotion) {
     peekInTimer = setTimeout(function () {
       peek.classList.add("ar-peek-show");
-      peekOutTimer = setTimeout(hidePeek, 5200);
-    }, 1200);
+      peekOutTimer = setTimeout(hidePeek, 3400);
+    }, 1000);
   }
 
   // Greeting teaser: a little WhatsApp-style bubble that pops in beside
@@ -309,9 +309,11 @@
   teaserClose.setAttribute("aria-label", "Dismiss greeting");
   teaser.appendChild(teaserClose);
   document.body.appendChild(teaser);
+  // The bubble arrives only AFTER the character has waved and settled
+  // back into the button, so the two never overlap.
   var teaserTimer = setTimeout(function () {
     teaser.classList.add("ar-teaser-show");
-  }, 1600);
+  }, 4900);
   function hideTeaser() {
     clearTimeout(teaserTimer);
     teaser.classList.remove("ar-teaser-show");
