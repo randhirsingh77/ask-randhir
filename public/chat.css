@@ -17,8 +17,8 @@
   right: 20px;
   bottom: 20px;
   z-index: 60;
-  width: 68px;
-  height: 68px;
+  width: 76px;
+  height: 76px;
   padding: 0;
   border: 2px solid var(--ar-border);
   border-radius: 50%;
@@ -130,10 +130,30 @@
   background: var(--ar-muted);
 }
 
+.ar-peek {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 59;
+  width: 154px;
+  height: 154px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 18%;
+  border: 2px solid var(--ar-border);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(46%) scale(0.42);
+  transform-origin: bottom right;
+  transition: opacity 300ms ease, transform 480ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.ar-peek-show { opacity: 1; transform: translateY(-52%) scale(1); }
+
 .ar-teaser {
   position: fixed;
   right: 20px;
-  bottom: 100px;
+  bottom: 108px;
   z-index: 60;
   display: flex;
   align-items: flex-start;
@@ -249,8 +269,9 @@
     border: none;
     border-radius: 0;
   }
-  .ar-launcher { right: 14px; bottom: 14px; width: 60px; height: 60px; }
-  .ar-teaser { right: 14px; bottom: 86px; }
+  .ar-launcher { right: 14px; bottom: 14px; width: 64px; height: 64px; }
+  .ar-teaser { right: 14px; bottom: 90px; }
+  .ar-peek { right: 14px; bottom: 14px; width: 132px; height: 132px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
