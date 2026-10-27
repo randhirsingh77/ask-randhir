@@ -132,11 +132,11 @@
 
 .ar-peek {
   position: fixed;
-  right: 30px;
-  bottom: 52px;
+  right: 6px;
+  bottom: 44px;
   z-index: 59;
-  width: 216px;
-  height: 216px;
+  width: 160px;
+  height: 160px;
   pointer-events: none;
   opacity: 0;
   transform: translateY(58%) scale(0.62);
@@ -266,7 +266,7 @@
   }
   .ar-launcher { right: 14px; bottom: 14px; width: 72px; height: 72px; }
   .ar-teaser { right: 14px; bottom: 98px; }
-  .ar-peek { right: 24px; bottom: 46px; width: 176px; height: 176px; }
+  .ar-peek { right: 2px; bottom: 38px; width: 140px; height: 140px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
