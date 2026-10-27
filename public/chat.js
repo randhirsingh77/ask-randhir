@@ -278,13 +278,9 @@
   // pops OUT of the launcher circle — bigger — plays its (silent) wave,
   // then settles back into the circle. Once per page load.
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var peek = el("video", "ar-peek");
-  peek.muted = true;
-  peek.loop = true;
-  peek.playsInline = true;
-  peek.preload = "auto";
-  peek.poster = AVATAR_URL;
-  peek.src = base + GREET_VIDEO_FILE;
+  var peek = el("img", "ar-peek");
+  peek.src = base + "avatar-peek.webp";
+  peek.alt = "";
   peek.setAttribute("aria-hidden", "true");
   document.body.appendChild(peek);
   var peekInTimer = null;
@@ -297,8 +293,6 @@
   if (!reduceMotion) {
     peekInTimer = setTimeout(function () {
       peek.classList.add("ar-peek-show");
-      var p = peek.play();
-      if (p && p.catch) p.catch(function () {});
       peekOutTimer = setTimeout(hidePeek, 5200);
     }, 1200);
   }
