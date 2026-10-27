@@ -264,6 +264,15 @@
   lImg.src = AVATAR_URL;
   lImg.alt = "";
   launcher.appendChild(lImg);
+  // The greeting character lives INSIDE the launcher: when it is time
+  // to greet, the button's own avatar comes out (see .ar-greeting) —
+  // there is never a second avatar.
+  var charImg = el("img", "ar-launcher-char");
+  charImg.src = base + "avatar-peek.webp";
+  charImg.alt = "";
+  charImg.setAttribute("aria-hidden", "true");
+  charImg.setAttribute("fetchpriority", "high");
+  launcher.appendChild(charImg);
   document.body.appendChild(launcher);
 
   var dialog = el("dialog", "ar-dialog");
@@ -274,27 +283,35 @@
   dialog.appendChild(chat.root);
   document.body.appendChild(dialog);
 
-  // Peek greeting: shortly after the page loads, the avatar character
-  // pops OUT of the launcher circle — bigger — plays its (silent) wave,
-  // then settles back into the circle. Once per page load.
+  // Greeting: the launcher's OWN avatar comes out to greet. The button
+  // opens up, its avatar rises out of the circle — smiling, waving —
+  // stays a few seconds, then settles back into the circle. One element
+  // throughout. The start waits until the character animation has
+  // actually loaded (on a slow mobile connection the moment must not
+  // pass before the file arrives); it gives up quietly if it fails.
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var peek = el("img", "ar-peek");
-  peek.src = base + "avatar-peek.webp";
-  peek.alt = "";
-  peek.setAttribute("aria-hidden", "true");
-  document.body.appendChild(peek);
-  var peekInTimer = null;
-  var peekOutTimer = null;
-  function hidePeek() {
-    if (peekInTimer) clearTimeout(peekInTimer);
-    if (peekOutTimer) clearTimeout(peekOutTimer);
-    peek.classList.remove("ar-peek-show");
+  var charReady = false;
+  var charFailed = false;
+  charImg.addEventListener("load", function () { charReady = true; });
+  charImg.addEventListener("error", function () { charFailed = true; });
+  var greetInTimer = null;
+  var greetOutTimer = null;
+  function runGreeting() {
+    launcher.classList.add("ar-greeting");
+    greetOutTimer = setTimeout(endGreeting, 6000);
+  }
+  function endGreeting() {
+    if (greetInTimer) clearTimeout(greetInTimer);
+    if (greetOutTimer) clearTimeout(greetOutTimer);
+    launcher.classList.remove("ar-greeting");
   }
   if (!reduceMotion) {
-    peekInTimer = setTimeout(function () {
-      peek.classList.add("ar-peek-show");
-      peekOutTimer = setTimeout(hidePeek, 6000);
-    }, 1000);
+    greetInTimer = setTimeout(function () {
+      if (charReady) runGreeting();
+      else if (!charFailed) {
+        greetInTimer = setTimeout(function () { if (!charFailed) runGreeting(); }, 1600);
+      }
+    }, 1100);
   }
 
   // Greeting teaser: a little WhatsApp-style bubble that pops in beside
@@ -327,7 +344,7 @@
   function openChat() {
     if (!dialog.open) {
       hideTeaser();
-      hidePeek();
+      endGreeting();
       dialog.showModal();
       launcher.classList.add("ar-launcher-hidden");
       chat.startGreeting();
