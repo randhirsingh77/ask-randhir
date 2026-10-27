@@ -15,9 +15,10 @@
 (function () {
   "use strict";
 
-  // AVATAR: to use Randhir's photo, save it as avatar.jpg next to this
-  // file and change this one line to "avatar.jpg".
+  // AVATAR: avatar.jpg next to this file is the illustrated avatar;
+  // avatar-greet.mp4 is its silent animated version, shown in the header.
   var AVATAR_FILE = "avatar.jpg";
+  var GREET_VIDEO_FILE = "avatar-greet.mp4";
 
   var scriptEl = document.currentScript;
   var base = scriptEl ? scriptEl.src.replace(/[^/]*$/, "") : "";
@@ -46,9 +47,13 @@
     var root = el("div", "ar-chat");
 
     var head = el("div", "ar-head");
-    var avatar = el("img", "ar-avatar");
-    avatar.src = AVATAR_URL;
-    avatar.alt = "";
+    var avatar = el("video", "ar-avatar");
+    avatar.muted = true;
+    avatar.loop = true;
+    avatar.autoplay = true;
+    avatar.playsInline = true;
+    avatar.poster = AVATAR_URL;
+    avatar.src = base + GREET_VIDEO_FILE;
     var titles = el("div", "ar-titles");
     titles.appendChild(el("p", "ar-title", "Ask Randhir"));
     titles.appendChild(
@@ -182,7 +187,7 @@
 
     addMessage(
       "assistant",
-      "Hi! Ask me anything about Randhir — his skills, his projects like Foodie and the LMS, or how to contact him."
+      "Hi there! 👋 I'm Ask Randhir, Randhir's AI assistant. Ask me anything about his skills, projects, or experience."
     );
 
     return { root: root, input: input };
