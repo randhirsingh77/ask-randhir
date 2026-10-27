@@ -313,6 +313,7 @@
     if (greetInTimer) clearTimeout(greetInTimer);
     waveVid.classList.remove("ar-launcher-wave-on");
     try { waveVid.pause(); } catch (e) {}
+    hideTeaser();
   }
   if (!reduceMotion) {
     greetInTimer = setTimeout(function () {
