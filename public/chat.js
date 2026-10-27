@@ -36,6 +36,14 @@
     "How can I contact him?",
   ];
 
+  // WhatsApp-style greeting: the messages arrive one by one, with the
+  // typing dots in between, the first time the chat is opened.
+  var GREETING = [
+    "Hi there! 👋",
+    "I'm Ask Randhir — Randhir's AI assistant.",
+    "Ask me anything about his skills, his projects like Foodie and the LMS, or how to contact him. Just type below 👇",
+  ];
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) node.className = className;
@@ -126,6 +134,57 @@
       return row;
     }
 
+    function typingEl() {
+      var t = el("div", "ar-typing");
+      t.setAttribute("role", "status");
+      t.setAttribute("aria-label", "Typing");
+      for (var i = 0; i < 3; i++) t.appendChild(el("span", "ar-dot"));
+      return t;
+    }
+
+    var greetingStarted = false;
+    var greetingTimers = [];
+    var greetingTyping = null;
+
+    function cancelGreeting() {
+      greetingTimers.forEach(clearTimeout);
+      greetingTimers = [];
+      if (greetingTyping) {
+        greetingTyping.remove();
+        greetingTyping = null;
+      }
+      greetingStarted = true;
+    }
+
+    function startGreeting() {
+      if (greetingStarted) return;
+      greetingStarted = true;
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) {
+        GREETING.forEach(function (m) {
+          addMessage("assistant", m);
+        });
+        return;
+      }
+      var i = 0;
+      function next() {
+        if (i >= GREETING.length) return;
+        greetingTyping = typingEl();
+        log.appendChild(greetingTyping);
+        log.scrollTop = log.scrollHeight;
+        greetingTimers.push(
+          setTimeout(function () {
+            if (greetingTyping) greetingTyping.remove();
+            greetingTyping = null;
+            addMessage("assistant", GREETING[i]);
+            i++;
+            if (i < GREETING.length) greetingTimers.push(setTimeout(next, 400));
+          }, 800)
+        );
+      }
+      next();
+    }
+
     function send(text) {
       var content = (text != null ? text : input.value).trim();
       if (!content || busy) return;
@@ -134,8 +193,8 @@
       if (text == null) input.value = "";
       history.push({ role: "user", content: content });
       addMessage("user", content);
-      var typing = el("div", "ar-typing", "Typing…");
-      typing.setAttribute("role", "status");
+      cancelGreeting();
+      var typing = typingEl();
       log.appendChild(typing);
       log.scrollTop = log.scrollHeight;
 
@@ -185,18 +244,15 @@
       }
     });
 
-    addMessage(
-      "assistant",
-      "Hi there! 👋 I'm Ask Randhir, Randhir's AI assistant. Ask me anything about his skills, projects, or experience."
-    );
-
-    return { root: root, input: input };
+    return { root: root, input: input, startGreeting: startGreeting };
   }
 
   if (MODE === "page") {
     var mount =
       document.getElementById("ask-randhir-root") || document.body;
-    mount.appendChild(buildChat(null).root);
+    var pageChat = buildChat(null);
+    mount.appendChild(pageChat.root);
+    pageChat.startGreeting();
     return;
   }
 
@@ -219,15 +275,43 @@
   dialog.appendChild(chat.root);
   document.body.appendChild(dialog);
 
-  launcher.addEventListener("click", function () {
+  // Greeting teaser: a little WhatsApp-style bubble that pops in beside
+  // the launcher shortly after the page loads, so the avatar greets the
+  // visitor before they even open the chat. Once per page load.
+  var teaser = el("div", "ar-teaser");
+  teaser.appendChild(
+    el("span", "ar-teaser-text", "Hi there! 👋 I'm Randhir's AI assistant — tap to chat")
+  );
+  var teaserClose = el("button", "ar-teaser-close", "×");
+  teaserClose.type = "button";
+  teaserClose.setAttribute("aria-label", "Dismiss greeting");
+  teaser.appendChild(teaserClose);
+  document.body.appendChild(teaser);
+  var teaserTimer = setTimeout(function () {
+    teaser.classList.add("ar-teaser-show");
+  }, 1600);
+  function hideTeaser() {
+    clearTimeout(teaserTimer);
+    teaser.classList.remove("ar-teaser-show");
+  }
+  teaserClose.addEventListener("click", function (ev) {
+    ev.stopPropagation();
+    hideTeaser();
+  });
+  teaser.addEventListener("click", openChat);
+
+  function openChat() {
     if (!dialog.open) {
+      hideTeaser();
       dialog.showModal();
       launcher.classList.add("ar-launcher-hidden");
+      chat.startGreeting();
       // Auto-focus is helpful with a real keyboard; on touch devices it
       // would summon the on-screen keyboard uninvited.
       if (window.matchMedia("(pointer: fine)").matches) chat.input.focus();
     }
-  });
+  }
+  launcher.addEventListener("click", openChat);
   dialog.addEventListener("close", function () {
     launcher.classList.remove("ar-launcher-hidden");
     launcher.focus(); // return focus to the launcher
