@@ -17,7 +17,7 @@
 
   // AVATAR: to use Randhir's photo, save it as avatar.jpg next to this
   // file and change this one line to "avatar.jpg".
-  var AVATAR_FILE = "avatar.svg";
+  var AVATAR_FILE = "avatar.jpg";
 
   var scriptEl = document.currentScript;
   var base = scriptEl ? scriptEl.src.replace(/[^/]*$/, "") : "";
