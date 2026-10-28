@@ -1,8 +1,8 @@
 # Ask Randhir
 
-An AI assistant for [Randhir Singh's portfolio](https://randhirsingh77.github.io/portfolio/).
-It answers questions about Randhir — his skills, projects, experience and how
-to contact him — and politely refuses everything else.
+An AI assistant for [my portfolio](https://randhirsingh77.github.io/portfolio/).
+It answers questions about me — my skills, projects, experience and how
+to contact me — and politely refuses everything else.
 
 It runs in two modes from one dependency-free frontend component:
 
@@ -84,7 +84,7 @@ Google to improve its products — never put private details in it.
 
 ```
 worker/
-  knowledge.md        the only source of facts about Randhir (public only)
+  knowledge.md        the only source of facts about me (public only)
   src/index.js        Worker entry: routes /api/chat, /, /chat, assets
   src/chat.js         chat handler: validation, caps, prompt, provider call
   src/guardrail.js    pure guardrail functions (also unit-tested)
@@ -114,15 +114,15 @@ flipping providers or after editing `knowledge.md`/the system prompt.
 
 ## Avatar
 
-The avatar is currently a clean initials placeholder (`RS`) in
-`public/avatar.svg`. To use Randhir's photo: save it as `public/avatar.jpg`
-and change the single `AVATAR_FILE` line at the top of `public/chat.js`.
+The avatar is an illustrated version of my photo, `public/avatar.jpg` — the
+widget shows it as a circular launcher on the portfolio, and the picture itself
+waves politely when the page loads. No voice ever plays automatically.
 
-## Owner deploy checklist
+## My deploy checklist
 
-The code is deploy-ready; these steps need the owner's own accounts and
-must be done by him (keys are entered as platform secrets — never commit
-them, never paste them into chat or code):
+The code is deploy-ready; these steps need my own accounts (keys are entered
+as platform secrets — I never commit them, and never paste them into chat or
+code):
 
 1. **Create the free Gemini key** — go to Google AI Studio
    (aistudio.google.com), sign in, "Get API key" → create key. No card
@@ -164,7 +164,7 @@ them, never paste them into chat or code):
 
 - **Region:** Google's Gemini API terms say the unpaid tier may not be
   used to serve API clients to users in the EEA, Switzerland or the UK.
-  Randhir's audience is India-first, and this is a personal portfolio —
+  My audience is India-first, and this is a personal portfolio —
   but if that audience ever matters, set `LLM_PROVIDER=groq` (Groq's free
   plan has no such clause found) and redeploy.
 - **Data:** on Gemini's free tier, prompts may be used by Google to
